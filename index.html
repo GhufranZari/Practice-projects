@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="Styles/style.css">
+
+
+</head>
+
+<body>
+
+  <form id="infoForm">
+  <label for="fname">First name:</label>
+  <input type="text" id="fname" name="fname" required>
+  <label for="lname">Last name:</label>
+  <input type="text" id="lname" name="lname" required>
+  <label for="dob">Date:</label>
+  <input type="date" id="dob" name="dob" required>
+  <label for="email">Email:</label>
+  <input type="email" id="email" class="input-field" required>
+  <label for="password">Password:</label>
+  <input type="password" id="password" class="input-field" required>
+
+  <label>
+    On / Off
+  </label>
+  
+  <input type="checkbox" id="status" name="status">
+
+  <input id="submit" type="submit" value="Submit">
+</form>
+
+<table >
+  <thead>
+    <tr>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Email</th>
+      <th>Password</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody id="table1">
+    
+  </tbody>
+</table>
+
+
+    <script src="Script/script.js"></script>
+
+</body>
+
+</html>

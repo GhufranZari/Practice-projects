@@ -1,0 +1,128 @@
+/* Reset defaults */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #3bf5ca, #7867f6, #c151e6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 50px 20px;
+}
+
+/* Form container */
+form {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 35px 40px;
+    margin: 10px 0;
+    border-radius: 15px;
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 400px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+form:hover {
+    
+    box-shadow: 0 16px 35px rgba(0, 0, 0, 0.2);
+}
+
+/* Labels */
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #f36565;
+}
+
+/* Input fields */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"] {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 5px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: border 0.3s, box-shadow 0.3s, background-color 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="date"]:focus {
+    border-color: #8fff5f;
+    box-shadow: 0 0 10px rgba(150, 227, 86, 0.5);
+    outline: none;
+    background-color: #fff7f5;
+}
+
+/* Checkbox styling */
+input[type="checkbox"] {
+    margin-left: 9px;
+    margin-top: 15px;
+
+    transform: scale(2.2);
+}
+
+/* Submit button */
+input[type="submit"] {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    margin-right: auto;
+    float: right;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+}
+
+input[type="submit"]:hover {
+    background: linear-gradient(135deg, #764ba2, #667eea);
+    transform: translateY(2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* On/Off label spacing */
+label[for="status"] {
+    display: inline-block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  border-color: black;
+  border-width: 4px;
+  width: 100%;
+  background-color: aliceblue;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child {
+  background-color: #dddddd;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+    form {
+        padding: 25px;
+    }
+}
