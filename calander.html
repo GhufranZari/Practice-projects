@@ -129,6 +129,7 @@
       background-color: lightgreen;
       color: #2e7d32;
       padding: 3px 8px;
+      
       border-radius: 10px;
       font-size: 11px;
       font-weight: bold;
@@ -296,8 +297,8 @@
 
   <!-- Search Bar -->
   <div class="search-bar">
-    <input type="text" id="search-input" placeholder="Search holidays or events...">
-    <button id="search-btn">🔍 Search</button>
+    <input type="text" id="search-input" >
+    <button id="search-btn">Search</button>
     <button id="clear-btn" class="clear-btn">✕ Clear</button>
   </div>
 
@@ -427,7 +428,7 @@ $(document).ready(function() {
     let html = '';
 
     if (results.length === 0) {
-      html = `<div class="no-results">No events found for "${query}"</div>`;
+      html = `<div class="no-results">ss events found for "${query}"</div>`;
     } else {
       results.forEach(function(event) {
         const date = new Date(event.date);
@@ -439,9 +440,9 @@ $(document).ready(function() {
           <div class="search-result-item" data-date="${event.date}">
             <div>
               <div class="result-title">${event.title}</div>
-              <div class="result-date">📅 ${formattedDate}</div>
+              <div class="result-date">${formattedDate}</div>
             </div>
-            <span class="result-badge">Holiday</span>
+            <span class="result-badge"></span>
           </div>
         `;
       });
@@ -573,13 +574,12 @@ $(document).ready(function() {
         <div class="event-info">
           <strong>Bank Holiday:</strong>
           <p>${holiday.title}</p>
-          <span class="holiday-badge">🎉 Public Holiday</span>
         </div>
       `;
     } else {
       html += `
         <div class="event-info">
-          <p style="color: #999; font-style: italic;">No special events on this date.</p>
+          <p style="color: #999; font-style: italic;">ss events on this date.</p>
         </div>
       `;
     }
