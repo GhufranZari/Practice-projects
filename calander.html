@@ -27,12 +27,6 @@
       overflow: hidden;
     }
     .calendar-header {
-
-      
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
       background-color: #4CAF50;
       color: white;
       padding: 20px;
@@ -56,6 +50,96 @@
     .calendar-header h2 {
       font-size: 22px;
     }
+
+    /* Search Bar */
+    .search-bar {
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      gap: 10px;
+    }
+    .search-bar input {
+      flex: 1;
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 14px;
+      outline: none;
+    }
+    .search-bar input:focus {
+      border-color: #4CAF50;
+    }
+    .search-bar button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .search-bar button:hover {
+      background-color: #45a049;
+    }
+    .clear-btn {
+      background-color: #9e9e9e !important;
+    }
+    .clear-btn:hover {
+      background-color: #757575 !important;
+    }
+
+    /* Search Results */
+    .search-results {
+      display: none;
+      padding: 15px;
+      border-bottom: 1px solid #e0e0e0;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .search-results h3 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    .search-result-item {
+      padding: 10px;
+      border: 1px solid #e0e0e0;
+      border-radius: 5px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: white;
+    }
+    .search-result-item:hover {
+      background-color: #e8f5e9;
+      border-color: #4CAF50;
+    }
+    .search-result-item .result-title {
+      font-weight: bold;
+      color: #333;
+    }
+    .search-result-item .result-date {
+      color: #4CAF50;
+      font-size: 12px;
+    }
+    .search-result-item .result-badge {
+      background-color: lightgreen;
+      color: #2e7d32;
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .no-results {
+      color: #999;
+      font-style: italic;
+      text-align: center;
+      padding: 10px;
+    }
+
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -99,6 +183,10 @@
     .day.holiday {
       background-color: lightgreen !important;
     }
+    .day.highlighted {
+      outline: 3px solid #FF9800;
+      outline-offset: -3px;
+    }
     .day-number {
       font-weight: bold;
       font-size: 16px;
@@ -116,7 +204,7 @@
     .day.today .holiday-name {
       color: white;
     }
-    
+
     /* Modal Styles */
     .modal {
       display: none;
@@ -182,9 +270,6 @@
       font-weight: bold;
       margin-top: 10px;
     }
-
-    
-
     .btn-close {
       background-color: #9e9e9e;
       color: white;
@@ -208,7 +293,20 @@
     <h2 id="current-month"></h2>
     <button id="next-month">Next ▶</button>
   </div>
-  
+
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <input type="text" id="search-input" placeholder="Search holidays or events...">
+    <button id="search-btn">🔍 Search</button>
+    <button id="clear-btn" class="clear-btn">✕ Clear</button>
+  </div>
+
+  <!-- Search Results -->
+  <div class="search-results" id="search-results">
+    <h3>Search Results:</h3>
+    <div id="results-list"></div>
+  </div>
+
   <div class="calendar-grid" id="calendar">
     <!-- Calendar will be generated here -->
   </div>
@@ -221,9 +319,7 @@
       <span class="close">&times;</span>
       <h2>Date Details</h2>
     </div>
-    <div id="event-details">
-      <!-- Event details will be shown here -->
-    </div>
+    <div id="event-details"></div>
     <button class="btn-close">Close</button>
   </div>
 </div>
@@ -232,15 +328,15 @@
 $(document).ready(function() {
   let currentDate = new Date();
   let selectedDate = null;
-  let holidayDates = {}; // Store holiday dates with details
+  let holidayDates = {};
+  let highlightedDates = [];
 
- 
+  // Fetch bank holidays from API
   $.ajax({
     url: 'https://www.gov.uk/bank-holidays.json',
     method: 'GET',
     dataType: 'json',
     success: function(data) {
-      
       if (data['england-and-wales'] && data['england-and-wales'].events) {
         data['england-and-wales'].events.forEach(function(event) {
           holidayDates[event.date] = {
@@ -250,14 +346,11 @@ $(document).ready(function() {
           };
         });
       }
-      console.log('Bank Holidays loaded:', holidayDates);
-      renderCalendar(); 
-
-
+      renderCalendar();
     },
     error: function(error) {
       console.error('Error fetching holidays:', error);
-      renderCalendar(); // Render calendar even if API fails
+      renderCalendar();
     }
   });
 
@@ -273,12 +366,106 @@ $(document).ready(function() {
     renderCalendar();
   });
 
+  // Search button click
+  $('#search-btn').click(function() {
+    searchEvents();
+  });
+
+  // Search on Enter key
+  $('#search-input').keyup(function(e) {
+    if (e.key === 'Enter') {
+      searchEvents();
+    }
+    // Live search
+    if ($(this).val().length > 1) {
+      searchEvents();
+    }
+  });
+
+  // Clear search
+  $('#clear-btn').click(function() {
+    $('#search-input').val('');
+    $('#search-results').hide();
+    $('#results-list').empty();
+    highlightedDates = [];
+    renderCalendar();
+  });
+
+  // Search function
+  function searchEvents() {
+    const query = $('#search-input').val().toLowerCase().trim();
+
+    if (query === '') {
+      $('#search-results').hide();
+      highlightedDates = [];
+      renderCalendar();
+      return;
+    }
+
+    const results = [];
+    highlightedDates = [];
+
+    // Search through all holidays
+    Object.keys(holidayDates).forEach(function(date) {
+      const holiday = holidayDates[date];
+      if (holiday.title.toLowerCase().includes(query) ||
+          holiday.notes.toLowerCase().includes(query) ||
+          holiday.date.includes(query)) {
+        results.push(holiday);
+        highlightedDates.push(date);
+      }
+    });
+
+    // Display results
+    showSearchResults(results, query);
+    renderCalendar();
+  }
+
+  // Show search results
+  function showSearchResults(results, query) {
+    $('#search-results').show();
+    let html = '';
+
+    if (results.length === 0) {
+      html = `<div class="no-results">No events found for "${query}"</div>`;
+    } else {
+      results.forEach(function(event) {
+        const date = new Date(event.date);
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                           'July', 'August', 'September', 'October', 'November', 'December'];
+        const formattedDate = `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+
+        html += `
+          <div class="search-result-item" data-date="${event.date}">
+            <div>
+              <div class="result-title">${event.title}</div>
+              <div class="result-date">📅 ${formattedDate}</div>
+            </div>
+            <span class="result-badge">Holiday</span>
+          </div>
+        `;
+      });
+    }
+
+    $('#results-list').html(html);
+
+    // Click on result to navigate to that month
+    $('.search-result-item').click(function() {
+      const date = $(this).data('date');
+      const parts = date.split('-');
+      currentDate = new Date(parts[0], parts[1] - 1, parts[2]);
+      selectedDate = date;
+      renderCalendar();
+      showEventDetails(date);
+    });
+  }
+
   // Close modal
   $('.close, .btn-close').click(function() {
     $('#event-modal').hide();
   });
 
-  // Click outside modal to close
+  // Click outside modal
   $(window).click(function(e) {
     if ($(e.target).hasClass('modal')) {
       $('#event-modal').hide();
@@ -289,59 +476,59 @@ $(document).ready(function() {
   function renderCalendar() {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    
+
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
                        'July', 'August', 'September', 'October', 'November', 'December'];
-    
+
     $('#current-month').text(`${monthNames[month]} ${year}`);
-    
+
     let html = '';
-    
+
     // Day names
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     dayNames.forEach(day => {
       html += `<div class="day-name">${day}</div>`;
     });
-    
+
     // Calendar calculations
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const daysInPrevMonth = new Date(year, month, 0).getDate();
-    
-    // Previous month days
+
+    // Previous month 
     for (let i = firstDay - 1; i >= 0; i--) {
       html += `<div class="day other-month">
         <div class="day-number">${daysInPrevMonth - i}</div>
       </div>`;
     }
-    
-    // Current month days
+
+    // Current month 
     const today = new Date();
     for (let day = 1; day <= daysInMonth; day++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      
-      const isToday = day === today.getDate() && 
-                     month === today.getMonth() && 
+
+      const isToday = day === today.getDate() &&
+                     month === today.getMonth() &&
                      year === today.getFullYear();
-      
+
       const isSelected = selectedDate === dateStr;
-      
-      // Check if this date is a bank holiday
       const isHoliday = holidayDates.hasOwnProperty(dateStr);
+      const isHighlighted = highlightedDates.includes(dateStr);
       const holidayName = isHoliday ? holidayDates[dateStr].title : '';
-      
+
       let className = 'day';
       if (isToday) className += ' today';
       if (isSelected) className += ' selected';
       if (isHoliday) className += ' holiday';
-      
+      if (isHighlighted) className += ' highlighted';
+
       html += `<div class="${className}" data-date="${dateStr}">
         <div class="day-number">${day}</div>
         ${isHoliday ? `<div class="holiday-name">${holidayName}</div>` : ''}
       </div>`;
     }
-    
-    // Next month days
+
+    // Next month 
     const totalCells = firstDay + daysInMonth;
     const remainingCells = 7 - (totalCells % 7);
     if (remainingCells < 7) {
@@ -351,14 +538,13 @@ $(document).ready(function() {
         </div>`;
       }
     }
-    
+
     $('#calendar').html(html);
-    
-    // Attach click events to days
+
+    // Click events
     $('.day').click(function() {
       if (!$(this).hasClass('other-month')) {
         selectedDate = $(this).data('date');
-        console.log('Selected date:', selectedDate);
         showEventDetails(selectedDate);
         renderCalendar();
       }
@@ -371,17 +557,16 @@ $(document).ready(function() {
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
                        'July', 'August', 'September', 'October', 'November', 'December'];
-    
-    const formattedDate = `${dayNames[date.getDay()]}, ${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`; 
-    
+
+    const formattedDate = `${dayNames[date.getDay()]}, ${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+
     let html = `
       <div class="event-info">
         <strong>Selected Date:</strong>
         <p>${formattedDate}</p>
       </div>
     `;
-    
-    // Check if this date has a holiday
+
     if (holidayDates.hasOwnProperty(dateStr)) {
       const holiday = holidayDates[dateStr];
       html += `
@@ -398,7 +583,7 @@ $(document).ready(function() {
         </div>
       `;
     }
-    
+
     $('#event-details').html(html);
     $('#event-modal').show();
   }
