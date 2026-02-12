@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Calendar with Events</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .calendar-container {
+      max-width: 600px;
+      width: 100%;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .calendar-header {
+
+      
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+      background-color: #4CAF50;
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .calendar-header button {
+      background: white;
+      border: none;
+      color: #4CAF50;
+      padding: 8px 15px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .calendar-header button:hover {
+      background: #f0f0f0;
+    }
+    .calendar-header h2 {
+      font-size: 22px;
+    }
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      background-color: #e0e0e0;
+      padding: 1px;
+    }
+    .day-name {
+      background-color: #f8f8f8;
+      padding: 15px;
+      text-align: center;
+      font-weight: bold;
+      color: #666;
+      font-size: 14px;
+    }
+    .day {
+      background-color: white;
+      padding: 10px;
+      text-align: center;
+      min-height: 80px;
+      cursor: pointer;
+      position: relative;
+    }
+    .day:hover {
+      background-color: #e8f5e9;
+    }
+    .day.other-month {
+      background-color: #fafafa;
+      color: #ccc;
+    }
+    .day.today {
+      background-color: #4CAF50;
+      color: white;
+      font-weight: bold;
+    }
+    .day.selected {
+      background-color: #2196F3;
+      color: white;
+      font-weight: bold;
+    }
+    .day.holiday {
+      background-color: lightgreen !important;
+    }
+    .day-number {
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    .holiday-name {
+      font-size: 10px;
+      color: #2e7d32;
+      font-weight: bold;
+      margin-top: 3px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .day.today .holiday-name {
+      color: white;
+    }
+    
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background-color: white;
+      margin: 10% auto;
+      padding: 30px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .modal-header {
+      margin-bottom: 20px;
+      border-bottom: 2px solid #4CAF50;
+      padding-bottom: 10px;
+    }
+    .modal-header h2 {
+      color: #4CAF50;
+      margin: 0;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 20px;
+    }
+    .close:hover {
+      color: #000;
+    }
+    .event-info {
+      margin: 15px 0;
+    }
+    .event-info strong {
+      color: #333;
+      display: block;
+      margin-bottom: 5px;
+    }
+    .event-info p {
+      color: #666;
+      margin: 5px 0;
+      padding: 10px;
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
+    .holiday-badge {
+      display: inline-block;
+      background-color: lightgreen;
+      color: #2e7d32;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    
+
+    .btn-close {
+      background-color: #9e9e9e;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+    .btn-close:hover {
+      background-color: #757575;
+    }
+  </style>
+</head>
+<body>
+
+<div class="calendar-container">
+  <div class="calendar-header">
+    <button id="prev-month">◀ Prev</button>
+    <h2 id="current-month"></h2>
+    <button id="next-month">Next ▶</button>
+  </div>
+  
+  <div class="calendar-grid" id="calendar">
+    <!-- Calendar will be generated here -->
+  </div>
+</div>
+
+<!-- Event Details Modal -->
+<div id="event-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="close">&times;</span>
+      <h2>Date Details</h2>
+    </div>
+    <div id="event-details">
+      <!-- Event details will be shown here -->
+    </div>
+    <button class="btn-close">Close</button>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+  let currentDate = new Date();
+  let selectedDate = null;
+  let holidayDates = {}; // Store holiday dates with details
+
+ 
+  $.ajax({
+    url: 'https://www.gov.uk/bank-holidays.json',
+    method: 'GET',
+    dataType: 'json',
+    success: function(data) {
+      
+      if (data['england-and-wales'] && data['england-and-wales'].events) {
+        data['england-and-wales'].events.forEach(function(event) {
+          holidayDates[event.date] = {
+            title: event.title,
+            date: event.date,
+            notes: event.notes || 'Bank Holiday'
+          };
+        });
+      }
+      console.log('Bank Holidays loaded:', holidayDates);
+      renderCalendar(); 
+
+
+    },
+    error: function(error) {
+      console.error('Error fetching holidays:', error);
+      renderCalendar(); // Render calendar even if API fails
+    }
+  });
+
+  // Previous month
+  $('#prev-month').click(function() {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    renderCalendar();
+  });
+
+  // Next month
+  $('#next-month').click(function() {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    renderCalendar();
+  });
+
+  // Close modal
+  $('.close, .btn-close').click(function() {
+    $('#event-modal').hide();
+  });
+
+  // Click outside modal to close
+  $(window).click(function(e) {
+    if ($(e.target).hasClass('modal')) {
+      $('#event-modal').hide();
+    }
+  });
+
+  // Render calendar
+  function renderCalendar() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                       'July', 'August', 'September', 'October', 'November', 'December'];
+    
+    $('#current-month').text(`${monthNames[month]} ${year}`);
+    
+    let html = '';
+    
+    // Day names
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    dayNames.forEach(day => {
+      html += `<div class="day-name">${day}</div>`;
+    });
+    
+    // Calendar calculations
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const daysInPrevMonth = new Date(year, month, 0).getDate();
+    
+    // Previous month days
+    for (let i = firstDay - 1; i >= 0; i--) {
+      html += `<div class="day other-month">
+        <div class="day-number">${daysInPrevMonth - i}</div>
+      </div>`;
+    }
+    
+    // Current month days
+    const today = new Date();
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      
+      const isToday = day === today.getDate() && 
+                     month === today.getMonth() && 
+                     year === today.getFullYear();
+      
+      const isSelected = selectedDate === dateStr;
+      
+      // Check if this date is a bank holiday
+      const isHoliday = holidayDates.hasOwnProperty(dateStr);
+      const holidayName = isHoliday ? holidayDates[dateStr].title : '';
+      
+      let className = 'day';
+      if (isToday) className += ' today';
+      if (isSelected) className += ' selected';
+      if (isHoliday) className += ' holiday';
+      
+      html += `<div class="${className}" data-date="${dateStr}">
+        <div class="day-number">${day}</div>
+        ${isHoliday ? `<div class="holiday-name">${holidayName}</div>` : ''}
+      </div>`;
+    }
+    
+    // Next month days
+    const totalCells = firstDay + daysInMonth;
+    const remainingCells = 7 - (totalCells % 7);
+    if (remainingCells < 7) {
+      for (let i = 1; i <= remainingCells; i++) {
+        html += `<div class="day other-month">
+          <div class="day-number">${i}</div>
+        </div>`;
+      }
+    }
+    
+    $('#calendar').html(html);
+    
+    // Attach click events to days
+    $('.day').click(function() {
+      if (!$(this).hasClass('other-month')) {
+        selectedDate = $(this).data('date');
+        console.log('Selected date:', selectedDate);
+        showEventDetails(selectedDate);
+        renderCalendar();
+      }
+    });
+  }
+
+  // Show event details in modal
+  function showEventDetails(dateStr) {
+    const date = new Date(dateStr);
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                       'July', 'August', 'September', 'October', 'November', 'December'];
+    
+    const formattedDate = `${dayNames[date.getDay()]}, ${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`; 
+    
+    let html = `
+      <div class="event-info">
+        <strong>Selected Date:</strong>
+        <p>${formattedDate}</p>
+      </div>
+    `;
+    
+    // Check if this date has a holiday
+    if (holidayDates.hasOwnProperty(dateStr)) {
+      const holiday = holidayDates[dateStr];
+      html += `
+        <div class="event-info">
+          <strong>Bank Holiday:</strong>
+          <p>${holiday.title}</p>
+          <span class="holiday-badge">🎉 Public Holiday</span>
+        </div>
+      `;
+    } else {
+      html += `
+        <div class="event-info">
+          <p style="color: #999; font-style: italic;">No special events on this date.</p>
+        </div>
+      `;
+    }
+    
+    $('#event-details').html(html);
+    $('#event-modal').show();
+  }
+});
+</script>
+
+</body>
+</html>
