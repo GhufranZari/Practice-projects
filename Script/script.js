@@ -1,37 +1,35 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("infoForm");
-  const tableBody = document.getElementById("table1");
+$(document).ready(function () {
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault(); 
+  const tableBody = $("#table1");
 
-    if (!form.checkValidity()) return;
+  function loadUsers() {
+    $.ajax({
+      url: "http://localhost:3030/users",
+      method: "GET",
+      dataType: "json",
+      success: function (users) {
 
-    const fname = document.getElementById("fname").value;
-    const lname = document.getElementById("lname").value;
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const status = document.getElementById("status").checked ? "On" : "Off";
+        console.log("Users loaded from API:", users);
 
-   
-    const emailsInTable = Array.from(tableBody.querySelectorAll("td:nth-child(3)")).map(td => td.textContent);
-    if (emailsInTable.includes(email)) {
-      alert("Error: This email already exists!");
-      return; // stop execution
-    }
+        tableBody.empty();
 
-    // Create new row
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${fname}</td>
-      <td>${lname}</td>
-      <td>${email}</td>
-      <td>${password}</td>
-      <td>${status}</td>
-    `;
+        $.each(users, function (index, user) {
+          const row = `
+            <tr>
+              <td>${user.id}</td>
+              <td>${user.name}</td>
+              <td>${user.email}</td>
+            </tr>
+          `;
+          tableBody.append(row);
+        });
+      },
+      error: function (error) {
+        console.error("Error loading users:", error);
+        alert("Failed to load users from API!");
+      }
+    });
+  }
 
-    tableBody.appendChild(row);
-    form.reset(); // clear form
-  });
+  loadUsers();
 });
-
