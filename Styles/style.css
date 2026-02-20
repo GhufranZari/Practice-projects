@@ -1,128 +1,216 @@
-/* Reset defaults */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    background: linear-gradient(135deg, #3bf5ca, #7867f6, #c151e6);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    min-height: 100vh;
-    padding: 50px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+  color: #333;
 }
 
-/* Form container */
+h2 {
+  color: white;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 28px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Form Styling */
 form {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 35px 40px;
-    margin: 10px 0;
-    border-radius: 15px;
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
-    width: 100%;
-    max-width: 400px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  max-width: 600px;
+  margin: 0 auto 40px;
 }
 
-form:hover {
-    
-    box-shadow: 0 16px 35px rgba(0, 0, 0, 0.2);
-}
-
-/* Labels */
 label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: #f36565;
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+  font-size: 14px;
 }
 
-/* Input fields */
 input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="date"] {
-    width: 100%;
-    padding: 12px 15px;
-    margin-bottom: 5px;
-    border: 2px solid #ccc;
-    border-radius: 10px;
-    font-size: 15px;
-    transition: border 0.3s, box-shadow 0.3s, background-color 0.3s;
+input[type="email"] {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: all 0.3s ease;
 }
 
 input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus,
-input[type="date"]:focus {
-    border-color: #8fff5f;
-    box-shadow: 0 0 10px rgba(150, 227, 86, 0.5);
-    outline: none;
-    background-color: #fff7f5;
+input[type="email"]:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* Checkbox styling */
-input[type="checkbox"] {
-    margin-left: 9px;
-    margin-top: 15px;
-
-    transform: scale(2.2);
-}
-
-/* Submit button */
 input[type="submit"] {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 10px;
-    margin-right: auto;
-    float: right;
-    font-size: 16px;
-    font-weight: 600;
-    transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 input[type="submit"]:hover {
-    background: linear-gradient(135deg, #764ba2, #667eea);
-    transform: translateY(2px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
-/* On/Off label spacing */
-label[for="status"] {
-    display: inline-block;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    font-weight: 500;
+input[type="submit"]:active {
+  transform: translateY(0);
 }
 
+/* Table Styling */
 table {
-  font-family: arial, sans-serif;
-  border-collapse: collapse;
-  border-color: black;
-  border-width: 4px;
   width: 100%;
-  background-color: aliceblue;
+  max-width: 1000px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
-td, th {
-  border: 1px solid #dddddd;
+thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+th {
+  padding: 18px;
   text-align: left;
-  padding: 8px;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-tr:nth-child {
-  background-color: #dddddd;
+td {
+  padding: 15px 18px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #555;
 }
 
-/* Responsive */
-@media (max-width: 500px) {
-    form {
-        padding: 25px;
-    }
+tbody tr {
+  transition: all 0.3s ease;
+}
+
+tbody tr:hover {
+  background-color: #f8f9ff;
+  transform: scale(1.01);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Button Styling */
+.edit-btn,
+.delete-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  margin-right: 8px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.edit-btn {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+.delete-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #da190b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3);
+}
+
+.edit-btn:active,
+.delete-btn:active {
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+
+  form {
+    padding: 20px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  table {
+    font-size: 12px;
+  }
+
+  th, td {
+    padding: 10px 8px;
+  }
+
+  .edit-btn,
+  .delete-btn {
+    padding: 6px 12px;
+    font-size: 11px;
+    display: block;
+    width: 100%;
+    margin-bottom: 5px;
+  }
+}
+
+/* Smooth Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+form, table {
+  animation: fadeIn 0.6s ease-out;
 }
